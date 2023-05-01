@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import tensorflow.compat.v1 as tf
 tf.disable_v2_behavior()
 from datetime import datetime
+from datetime import timedelta
 from matplotlib.dates import DateFormatter
 from keras.models import Sequential
 from keras.layers import LSTM, Dense
@@ -14,6 +15,22 @@ from sklearn.metrics import mean_squared_error, mean_absolute_error
 # Получение данных из файла data.csv
 df = pd.read_csv('data.csv')
 data = df['price'].values
+
+# Преобразование столбца 'date' в тип datetime
+df['date'] = pd.to_datetime(df['date'])
+
+# Установка столбца 'date' в качестве индекса
+df.set_index('date', inplace=True)
+
+# Вычисление скользящего среднего за последние 3 часа
+df['rolling_mean'] = df['price'].rolling('3H').mean()
+
+# Получение последней строки из DataFrame
+last_row = df.iloc[-1]
+
+# Получение времени и цены из последней строки
+last_time = last_row.name.strftime('%Y-%m-%d %H:%M:%S')
+last_price = last_row['price']
 
 # Нормализация данных
 data = data.reshape(-1, 1)
@@ -109,6 +126,16 @@ min_price = np.min(prediction)
 now = datetime.now()
 future_time = now + timedelta(hours=1)
 future_time_str = future_time.strftime("%H:%M")
+
+# Получение прогноза на следующий час
+forecast_price = last_price + (last_price - df.iloc[-2]['price'])
+
+# Получение времени прогноза на следующий час
+forecast_time = last_row.name + pd.Timedelta(hours=1)
+
+# Вывод результатов
+print(f'Last price: {last_price:.2f} ({last_time})')
+print(f'Forecast price: {forecast_price:.2f} ({forecast_time.strftime("%Y-%m-%d %H:%M:%S")})')
 
 # Рисование графика
 data = scaler.inverse_transform(data)
