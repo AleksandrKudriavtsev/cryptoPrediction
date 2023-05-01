@@ -11,14 +11,24 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 
 
+# # Получение данных из файла data.csv
+# df = pd.read_csv('data.csv')
+# data = df['price'].values
+# data['date'] = pd.to_datetime(data['date'])
+# df.plot (x='date', y='price')
+# plt.show ()
+
 # Получение данных из файла data.csv
 df = pd.read_csv('data.csv')
 data = df['price'].values
-df.plot (x='date', y='price')
-plt.show ()
+#df['date'] = pd.to_datetime(df['date'])
+
 
 # Преобразование столбца 'date' в тип datetime
 df['date'] = pd.to_datetime(df['date'])
+#Выводим график из имеющихся данных
+df.plot(x='date', y='price')
+plt.show()
 
 # Установка столбца 'date' в качестве индекса
 df.set_index('date', inplace=True)
@@ -134,6 +144,6 @@ print(f'Forecast price: {forecast_price:.2f} ({forecast_time.strftime("%Y-%m-%d 
 # plt.show()
 
 # постройте график с предсказанием на 1 час вперед
-plt.plot(data['time'], data['price'])
-plt.plot(prediction['time'], prediction['price'])
+plt.plot(data['date'], data['price'])
+plt.plot(prediction['date'], prediction['price'])
 plt.show()
