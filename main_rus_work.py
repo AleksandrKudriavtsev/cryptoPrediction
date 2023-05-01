@@ -107,13 +107,69 @@ def predict_1_hour_ahead(data):
 # вызовите эту функцию после анализа данных
 prediction = predict_1_hour_ahead(data)
 
+# Получение исторических данных о цене на биткоин из файла data.csv
+data = pd.read_csv('data.csv')
+input_data = data['price'].values
+
+
+# Получение последнего значения времени в исторических данных
+last_date = data['date'].values[-1]
+
+# Генерация новых значений дат и времени для прогнозируемых значений цены на биткоин
+num_predictions = int((60 * 60) / 4)  # Количество прогнозов на час вперед с шагом в 4 секунды
+predicted_dates = pd.date_range(last_date, periods=num_predictions, freq='4S')
+
+# Получение прогнозируемых значений цены на биткоин
+predicted_prices = []
+for i in range(num_predictions):
+    # Получение прогноза для текущего значения времени
+    prediction = model.predict(input_data)
+    predicted_price = scaler.inverse_transform(prediction)
+    predicted_prices.append(predicted_price[0][0])
+
+    # Обновление входных данных для следующего прогноза
+    input_data = np.append(input_data[0][1:], predicted_price)
+    input_data = input_data.reshape((1, look_back, 1))
+
+
+
+
+
+
+
+# Выбор нужного количества последних значений из массива input_data
+#input_data = input_data[-look_back:]
+
+# Изменение формата и размерности входных данных
+#input_data = input_data.reshape((1, look_back, 1))
+
+# Получение прогнозируемых значений цены на биткоин в течение следующего часа после входных данных
+#predicted_prices = model.predict(input_data)
+
+# Получение последнего значения времени в исторических данных
+#last_date = data['date'].values[-1]
+
+# Генерация новых значений дат и времени для прогнозируемых значений цены на биткоин
+#predicted_dates = pd.date_range(last_date, periods=len(predicted_prices), freq='H')
+
+# Изменение размерности массива predicted_prices
+#predicted_prices = predicted_prices.reshape((predicted_dates.shape[0],))
+
+# Проверка размерности массивов predicted_prices и predicted_dates
+print(predicted_prices.shape)
+print(predicted_dates.shape)
+
+# Создание нового DataFrame с прогнозируемыми изменениями цены на биткоин
+predictions = pd.DataFrame({'symbol': 'BTCUSDT', 'price': predicted_prices, 'date': predicted_dates})
+predictions.to_csv('predictions.csv', index=False)
+
 # # Получение прогноза на час вперед
 # prediction = model.predict(last_data)
 # prediction = scaler.inverse_transform(prediction)
 
-# Прогнозируемые значения цены на биткоин в течение следующего часа сохраняю в файл
-predictions = pd.DataFrame({'symbol': 'BTCUSDT', 'price': predicted_prices, 'date': predicted_dates})
-predictions.to_csv('predictions.csv', index=False)
+# # Прогнозируемые значения цены на биткоин в течение следующего часа сохраняю в файл
+# predictions = pd.DataFrame({'symbol': 'BTCUSDT', 'price': predicted_prices, 'date': predicted_dates})
+# predictions.to_csv('predictions.csv', index=False)
 
 print(f'Прогноз на час вперед: {prediction[0][0]:.2f}')
 
