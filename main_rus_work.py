@@ -14,8 +14,6 @@ from sklearn.metrics import mean_squared_error, mean_absolute_error
 # Получение данных из файла data.csv
 df = pd.read_csv('data.csv')
 data = df['price'].values
-
-# Отрисовка на графике полученных данных
 df.plot (x='date', y='price')
 plt.show ()
 
@@ -88,38 +86,21 @@ print(f'MAE: {mae:.2f}')
 last_data = data[-look_back:]
 last_data = last_data.reshape((1, look_back, 1))
 
-# Получение прогноза на час вперед
-prediction = model.predict(last_data)
-prediction = scaler.inverse_transform(prediction)
+def predict_1_hour_ahead(data):
+    # Получение прогноза на час вперед
+    prediction = model.predict(last_data)
+    prediction = scaler.inverse_transform(prediction)
+    return prediction
+
+# вызовите эту функцию после анализа данных
+prediction = predict_1_hour_ahead(data)
+
+# # Получение прогноза на час вперед
+# prediction = model.predict(last_data)
+# prediction = scaler.inverse_transform(prediction)
 
 print(f'Прогноз на час вперед: {prediction[0][0]:.2f}')
 
-# # Визуализация результатов
-#
-# test = scaler.inverse_transform(test)
-# plt.plot(test, color='blue')
-# plt.plot(predictions, color='green')
-# plt.title('Bitcoin Price Prediction')
-# plt.xlabel('Time')
-# plt.ylabel('Price (USD)')
-# plt.show()
-#
-# # Визуализация результатов
-#
-# data = scaler.inverse_transform(data)
-# plt.plot(data, color='green')
-# plt.plot(np.append(data, prediction), color='red')
-# plt.title('Bitcoin Price Prediction')
-# plt.xlabel('Time')
-# plt.ylabel('Price (USD)')
-# #plt.show()
-#
-# # Изменение формата времени по оси x
-# date_form = DateFormatter("%H:%M")
-# ax = plt.gca()
-# ax.xaxis.set_major_formatter(date_form)
-#
-# plt.show()
 
 # Получение максимальной и минимальной цены
 max_price = np.max(prediction)
@@ -140,15 +121,19 @@ forecast_time = last_row.name + pd.Timedelta(hours=1)
 print(f'Last price: {last_price:.2f} ({last_time})')
 print(f'Forecast price: {forecast_price:.2f} ({forecast_time.strftime("%Y-%m-%d %H:%M:%S")})')
 
-# Рисование графика
-data = scaler.inverse_transform(data)
-plt.plot(data, color='green')
-plt.plot(np.append(data, prediction), color='red')
-plt.title('Bitcoin Price Prediction')
-plt.xlabel('Time')
-plt.ylabel('Price (USD)')
-date_form = DateFormatter("%H:%M")
-ax = plt.gca()
-ax.xaxis.set_major_formatter(date_form)
+# # Рисование графика
+# data = scaler.inverse_transform(data)
+# plt.plot(data, color='green')
+# plt.plot(np.append(data, prediction), color='red')
+# plt.title('Bitcoin Price Prediction')
+# plt.xlabel('Time')
+# plt.ylabel('Price (USD)')
+# date_form = DateFormatter("%H:%M")
+# ax = plt.gca()
+# ax.xaxis.set_major_formatter(date_form)
+# plt.show()
 
+# постройте график с предсказанием на 1 час вперед
+plt.plot(data['time'], data['price'])
+plt.plot(prediction['time'], prediction['price'])
 plt.show()
