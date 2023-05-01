@@ -128,6 +128,15 @@ for i in range(num_predictions):
     predicted_prices.append(predicted_price[0][0])
 
     # Обновление входных данных для следующего прогноза
+
+    # Определяем значения batch_size, timesteps и features
+    batch_size = 32
+    timesteps = 10
+    features = 1
+
+    # Изменяем форму массива numpy input_data
+    input_data = np.reshape(input_data, (batch_size, timesteps, features))
+    
     input_data = np.append(input_data[0][1:], predicted_price)
     input_data = input_data.reshape((1, look_back, 1))
 
