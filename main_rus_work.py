@@ -78,6 +78,8 @@ model.add(LSTM(8, input_shape=(look_back, 1)))
 model.add(Dense(1))
 model.compile(loss='mean_squared_error', optimizer='adam')
 model.fit(X_train, y_train, epochs=100, batch_size=32)
+# Сохраняем обученную модель
+model.save('model.h5')
 
 # Предсказание курса биткоина на ближайший час
 predictions = model.predict(X_test)
@@ -109,6 +111,10 @@ prediction = predict_1_hour_ahead(data)
 # prediction = model.predict(last_data)
 # prediction = scaler.inverse_transform(prediction)
 
+# Прогнозируемые значения цены на биткоин в течение следующего часа сохраняю в файл
+predictions = pd.DataFrame({'symbol': 'BTCUSDT', 'price': predicted_prices, 'date': predicted_dates})
+predictions.to_csv('predictions.csv', index=False)
+
 print(f'Прогноз на час вперед: {prediction[0][0]:.2f}')
 
 
@@ -132,16 +138,19 @@ print(f'Last price: {last_price:.2f} ({last_time})')
 print(f'Forecast price: {forecast_price:.2f} ({forecast_time.strftime("%Y-%m-%d %H:%M:%S")})')
 
 # Рисование графика
-data = scaler.inverse_transform(data)
-plt.plot(data, color='green')
-plt.plot(np.append(data, prediction), color='red')
-plt.title('Bitcoin Price Prediction')
-plt.xlabel('Time')
-plt.ylabel('Price (USD)')
-date_form = DateFormatter("%H:%M")
-ax = plt.gca()
-ax.xaxis.set_major_formatter(date_form)
+predictions = pd.read_csv('predictions.csv')
+predictions.plot(x='date', y='price')
 plt.show()
+# data = scaler.inverse_transform(data)
+# plt.plot(data, color='green')
+# plt.plot(np.append(data, prediction), color='red')
+# plt.title('Bitcoin Price Prediction')
+# plt.xlabel('Time')
+# plt.ylabel('Price (USD)')
+# date_form = DateFormatter("%H:%M")
+# ax = plt.gca()
+# ax.xaxis.set_major_formatter(date_form)
+# plt.show()
 
 # постройте график с предсказанием на 1 час вперед
 #plt.plot(data['date'], data['price'])
