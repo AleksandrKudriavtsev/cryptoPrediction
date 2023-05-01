@@ -3,8 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import tensorflow.compat.v1 as tf
 tf.disable_v2_behavior()
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 from matplotlib.dates import DateFormatter
 from keras.models import Sequential
 from keras.layers import LSTM, Dense
@@ -15,6 +14,10 @@ from sklearn.metrics import mean_squared_error, mean_absolute_error
 # Получение данных из файла data.csv
 df = pd.read_csv('data.csv')
 data = df['price'].values
+
+# Отрисовка на графике полученных данных
+df.plot (x='date', y='price')
+plt.show ()
 
 # Преобразование столбца 'date' в тип datetime
 df['date'] = pd.to_datetime(df['date'])
@@ -147,8 +150,5 @@ plt.ylabel('Price (USD)')
 date_form = DateFormatter("%H:%M")
 ax = plt.gca()
 ax.xaxis.set_major_formatter(date_form)
-
-# Добавление текста на график
-plt.text(0.05, 0.9, f'Max price: {max_price:.2f}\nMin price: {min_price:.2f}\nTime: {current_time}', transform=ax.transAxes)
 
 plt.show()
